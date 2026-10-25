@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "meu-app-57",
-    "slug": "meu-app-57",
+    "name": "dispensa-plus",
+    "slug": "dispensa-plus",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "meuapp57",
+    "scheme": "despensa-plus",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -32,7 +32,8 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
