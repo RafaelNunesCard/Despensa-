@@ -15,7 +15,7 @@ export default function TabsLayout() {
         options={{
           title: 'Início',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Ionicons name="home" size={size} color={color as string} />
           ),
         }}
       />
@@ -24,16 +24,16 @@ export default function TabsLayout() {
         options={{
           title: 'Cadastrar',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="snow" size={size} color={color} />
+            <Ionicons name="add-circle-sharp" size={size} color={color as string} />
           ),
         }}
       />
       <Tabs.Screen
-        name="dispensa"
+        name="alerts"
         options={{
           title: 'Alertas',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="basket" size={size} color={color} />
+            <Ionicons name="basket" size={size} color={color as string} />
           ),
         }}
       />

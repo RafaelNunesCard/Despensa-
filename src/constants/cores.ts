@@ -15,4 +15,6 @@ export const cores = {
 
   verde: '#1E5C39',
   verdeClaro: '#DDEFE3',
+  
+  bege: '#DCD4C8'
 }

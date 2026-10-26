@@ -1,16 +1,26 @@
-import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, TextInput, FlatList } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { useFocusEffect } from 'expo-router';
 import { cores } from '@/constants/cores';
-import produtos from '@/data/fakeprodutos.json';
+import { listarProdutos, Produto } from '@/services/produtos';
+import { diasParaVencer, brParaIso } from '@/utils/datas';
 
 
 export default function Index() {
   const [local, setLocal] = useState<"Todos" | "Geladeira" | "Despensa">("Todos");
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      listarProdutos().then(setProdutos);
+    }, [])
+  );
 
   const filtrados = local === "Todos" ? produtos : produtos.filter((item) => item.local === local);
+  const vencendo = produtos.filter((p) => diasParaVencer(p.validade) <= 7).length;
 
   return (
     <View style={styles.container}>
@@ -27,7 +37,7 @@ export default function Index() {
 
       <View style={styles.banner}>
         <View>
-          <Text style={styles.bannerTextoNegrito}>3 itens vencem essa semana</Text>
+          <Text style={styles.bannerTextoNegrito}>{vencendo} itens vencem essa semana</Text>
           <Text style={styles.bannerTexto}>Usem antes que estraguem</Text>
         </View>
         <Pressable style={styles.bannerBotao}>
@@ -35,24 +45,27 @@ export default function Index() {
         </Pressable>
       </View>
 
-      <View style={{ flexDirection: 'row', marginBottom: 16 , width: '100%'}}>
-        <Pressable style={styles.botaofiltroAtivo} onPress={() => setLocal("Todos")}>
-          <Text style={styles.textoBotaoAtivo}>Todos</Text>
+      <View style={{ flexDirection: 'row', marginBottom: 20 , width: '100%'}}>
+        <Pressable style={local === "Todos" ? styles.botaofiltroAtivo : styles.botaofiltro} onPress={() => setLocal("Todos")}>
+          <Text style={local === "Todos" ? styles.textoBotaoAtivo : styles.textoBotao}>Todos</Text>
         </Pressable>
-        <Pressable style={styles.botaofiltro} onPress={() => setLocal("Geladeira")}>
-          <Text style={styles.textoBotao}>Geladeira</Text>
+        <Pressable style={local === "Geladeira" ? styles.botaofiltroAtivo : styles.botaofiltro} onPress={() => setLocal("Geladeira")}>
+          <Text style={local === "Geladeira" ? styles.textoBotaoAtivo : styles.textoBotao}>Geladeira</Text>
         </Pressable>
-        <Pressable style={styles.botaofiltro} onPress={() => setLocal("Despensa")}>
-          <Text style={styles.textoBotao}>Despensa</Text>
+        <Pressable style={local === "Despensa" ? styles.botaofiltroAtivo : styles.botaofiltro} onPress={() => setLocal("Despensa")}>
+          <Text style={local === "Despensa" ? styles.textoBotaoAtivo : styles.textoBotao}>Despensa</Text>
         </Pressable>
       </View>
 
-      <View>
-        <Text>Itens {local === "Todos" ? "da sua residência" : local}</Text>
+      <View style={{width: '100%'}}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Itens {local === "Todos" ? "da sua residência" : local}</Text>
         <FlatList
          data={filtrados}
-         keyExtractor={(item) => item.id}
-         renderItem={({ item }) => (
+         keyExtractor={(item) => String(item.id)}
+         renderItem={({ item }) => {
+          const dias = diasParaVencer(item.validade);
+
+          return(
             <View style={styles.card}>
               <View style={styles.cardIcone}>
                 {item.local === 'Geladeira' ? (
@@ -66,10 +79,10 @@ export default function Index() {
                 <Text style={styles.cardDescricao}>{item.local} {item.quantidade} unidades</Text>
               </View>
               <View style={styles.cardData}>
-                <Text style={styles.cardDataText}>{item.data === 1 ? "Amanhã" : `${item.data} dias`}</Text>
+                <Text style={styles.cardDataText}>{dias === 1 ? "Amanhã" : `${dias} dias`}</Text>
               </View>
             </View> 
-        )}
+        )}}
         />
       </View>
     </View>
@@ -187,7 +200,7 @@ const styles = StyleSheet.create({
   },
   cardDataText: {
     fontSize: 14,
-    color: cores.branco,
+    color: cores.vermelho,
   },
 
   titulo: { fontSize: 28, marginBottom: 16, color: cores.preto, fontWeight: 'bold' },
